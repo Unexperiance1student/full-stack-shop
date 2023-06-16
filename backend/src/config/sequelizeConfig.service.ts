@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-  SequelizeModuleOptions,
   SequelizeOptionsFactory,
+  SequelizeModuleOptions,
 } from '@nestjs/sequelize';
 import { User } from 'src/user/entity/user.modal';
 
 @Injectable()
 export class SequelizeConfigService implements SequelizeOptionsFactory {
   constructor(private readonly configService: ConfigService) {}
+
   createSequelizeOptions(): SequelizeModuleOptions {
     const {
       sql: { dialect, logging, host, port, username, password, database },
