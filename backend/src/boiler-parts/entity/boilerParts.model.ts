@@ -1,4 +1,5 @@
-import { Column, Model, Table } from 'sequelize-typescript';
+import { Table, Model, Column } from 'sequelize-typescript';
+
 @Table
 export class BoilerParts extends Model {
   @Column

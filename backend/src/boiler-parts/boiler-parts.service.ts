@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { BoilerParts } from './entity/boilerParts.mode';
 import { InjectModel } from '@nestjs/sequelize';
 import { IBoilerPartsQuery } from './types';
 import { Op } from 'sequelize';
+import { BoilerParts } from './entity/boilerParts.model';
 
 @Injectable()
 export class BoilerPartsService {
