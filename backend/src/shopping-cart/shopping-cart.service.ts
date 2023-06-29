@@ -39,7 +39,7 @@ export class ShoppingCartService {
 
   async updateCount(
     count: number,
-    partId: string | string,
+    partId: string | number,
   ): Promise<{ count: number }> {
     await this.shoppingCartRep.update({ count }, { where: { partId } });
     const part = await this.shoppingCartRep.findOne({ where: { partId } });

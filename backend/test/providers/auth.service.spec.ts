@@ -4,13 +4,21 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeConfigService } from 'src/config/sequelizeConfig.service';
 import { databaseConfig } from 'src/config/configuration';
-import { UserModule } from 'src/user/user.module';
 import { User } from 'src/user/entity/user.modal';
 import * as bcrypt from 'bcrypt';
-import * as request from 'supertest';
+import { AuthModule } from 'src/auth/auth.module';
+import { AuthService } from 'src/auth/auth.service';
 
-describe(' User controller', () => {
+const mockedUser = {
+  username: 'vl',
+  email: 'vl@mail.ru',
+  password: 'vl123',
+};
+
+describe('Auth service', () => {
   let app: INestApplication;
+  let authService: AuthService;
+
   beforeEach(async () => {
     const testModule: TestingModule = await Test.createTestingModule({
       imports: [
@@ -21,36 +29,38 @@ describe(' User controller', () => {
         ConfigModule.forRoot({
           load: [databaseConfig],
         }),
-        UserModule,
+        AuthModule,
       ],
     }).compile();
 
+    authService = testModule.get<AuthService>(AuthService);
     app = testModule.createNestApplication();
+
     await app.init();
   });
 
-  afterEach(async () => {
-    await User.destroy({ where: { username: 'test' } });
+  beforeEach(async () => {
+    const hashedPassword = await bcrypt.hash(mockedUser.password, 10);
+
+    const newUser = {
+      username: mockedUser.username,
+      password: hashedPassword,
+      email: mockedUser.email,
+    };
+    return await User.create(newUser);
   });
 
-  it('should create user', async () => {
-    const newUser = {
-      username: 'test',
-      email: 'test@list.ru',
-      password: 'test123',
-    };
+  afterEach(async () => {
+    await User.destroy({ where: { username: mockedUser.username } });
+  });
 
-    const response = await request(app.getHttpServer())
-      .post('/user/signup')
-      .send(newUser);
-
-    const passwordIsValid = await bcrypt.compare(
-      newUser.password,
-      response.body.password,
+  it('should login user', async () => {
+    const user = await authService.validateUser(
+      mockedUser.username,
+      mockedUser.password,
     );
 
-    expect(response.body.username).toBe(newUser.username);
-    expect(response.body.email).toBe(newUser.email);
-    expect(passwordIsValid).toBe(true);
+    expect(user.username).toBe(mockedUser.username);
+    expect(user.email).toBe(mockedUser.email);
   });
 });

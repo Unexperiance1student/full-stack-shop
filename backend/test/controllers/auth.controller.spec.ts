@@ -89,8 +89,9 @@ describe('Auth controller', () => {
       .post('/user/login')
       .send({ username: mockedUser.username, password: mockedUser.password });
 
-    const response = await request(app.getHttpServer()).get('/user/logout');
-    console.log(response);
+    const response = await request(app.getHttpServer())
+      .get('/user/logout')
+      .set('Cookie', login.header['set-cookie']);
     expect(response.body.msg).toBe('session has ended');
   });
 });
