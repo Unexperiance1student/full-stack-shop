@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './entity/user.modal';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,7 +26,8 @@ export class UserService {
     return this.userRep.findOne({ ...filter });
   }
 
-  async create(dto: CreateUserDto): Promise<User> {
+  async create(dto: CreateUserDto): Promise<User | { warningMessage: string }> {
+    console.log(dto);
     const existingByUsername = await this.findOne({
       where: { username: dto.username },
     });
@@ -35,14 +36,11 @@ export class UserService {
     });
 
     if (existingByUsername) {
-      throw new BadRequestException(
-        'Пользователь  с таким именем уже существует',
-      );
+      return { warningMessage: 'Пользователь с таким именем уже существует' };
     }
+
     if (existingByEmail) {
-      throw new BadRequestException(
-        'Пользователь с такой почтой уже существует',
-      );
+      return { warningMessage: 'Пользователь с таким email уже существует' };
     }
 
     dto.password = await this.hashPassword(dto.password);

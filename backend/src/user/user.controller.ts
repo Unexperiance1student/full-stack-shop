@@ -29,11 +29,10 @@ export class UserController {
   @ApiOkResponse({ type: SignUpResponse })
   @Post('/signup')
   @HttpCode(HttpStatus.CREATED)
-  @Header('content-type', 'application/json')
+  // @Header('Content-Type', 'application/json')
   createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
-
   @ApiBody({ type: LoginUserRequest })
   @ApiOkResponse({ type: LoginUserResponse })
   @Post('/login')
