@@ -9,7 +9,7 @@ import { showAuthError } from '@/utils/errors';
 import { $mode } from '@/context/mode';
 import styles from '@/styles/auth/index.module.scss';
 import spinnerStyles from '@/styles/spinner/index.module.scss';
-import { signInFx } from '@/app/api/auth';
+import { signInFx } from '@/api/auth';
 
 const SignInForm = () => {
   const [spinner, setSpinner] = useState(false);

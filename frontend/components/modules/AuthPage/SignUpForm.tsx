@@ -6,7 +6,7 @@ import { IInputs } from '@/types/auth';
 import { $mode } from '@/context/mode';
 import EmailInput from '@/components/elements/AuthPage/EmailInput';
 import PasswordInput from '@/components/elements/AuthPage/PasswordInput';
-import { signUpFx } from '@/app/api/auth';
+import { signUpFx } from '@/api/auth';
 import { showAuthError } from '@/utils/errors';
 import styles from '@/styles/auth/index.module.scss';
 import spinnerStyles from '@/styles/spinner/index.module.scss';

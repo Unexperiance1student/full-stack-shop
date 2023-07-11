@@ -1,7 +1,7 @@
 import { createEffect } from 'effector-next';
 import { toast } from 'react-toastify';
-import { ISignUpFx, ISignInFx } from '../../types/auth';
-import api from '../axiosClient';
+import { ISignUpFx, ISignInFx } from '../types/auth';
+import api from './axiosClient';
 
 const config = {
   headers: { 'Content-Type': 'application/json' },
