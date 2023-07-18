@@ -5,13 +5,43 @@ import { useStore } from 'effector-react';
 import { $mode } from '@/context/mode';
 import { $shoppingCart } from '@/context/shopping-cart';
 import { AnimatePresence, motion } from 'framer-motion';
+import BrandsSlider from '@/components/modules/DashboardPage/BrandsSlider';
+import { IBoilerParts } from '@/types/boilerpars';
+import { getBetsellersOrNewPartsFx } from '@/api/boilerParts';
+import DashboardSlider from '@/components/modules/DashboardPage/DashboardSlider';
+import CartAlert from '@/components/modules/DashboardPage/CartAlert';
 
 const DashboardPage = () => {
   const [spinner, setSpinner] = useState(false);
+  const [newParts, setNewParts] = useState<IBoilerParts>({} as IBoilerParts);
+  const [bestsellers, setBestsellers] = useState<IBoilerParts>(
+    {} as IBoilerParts
+  );
   const shoppingCart = useStore($shoppingCart);
   const [showAlert, setShowAlert] = useState(!!shoppingCart.length);
   const mode = useStore($mode);
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
+
+  useEffect(() => {
+    loadBoilerParts();
+  }, []);
+
+  const loadBoilerParts = async () => {
+    try {
+      setSpinner(true);
+      const bestsellers = await getBetsellersOrNewPartsFx(
+        '/boiler-parts/bestsellers'
+      );
+      const newParts = await getBetsellersOrNewPartsFx('/boiler-parts/new');
+
+      setBestsellers(bestsellers);
+      setNewParts(newParts);
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setSpinner(false);
+    }
+  };
 
   const closeAlert = () => setShowAlert(false);
 

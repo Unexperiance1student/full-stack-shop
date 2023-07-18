@@ -8,15 +8,19 @@ import { AnimatePresence, motion } from 'framer-motion';
 import LogoutSvg from '@/components/elements/LogoutSvg/LogoutSvg';
 import { useRouter } from 'next/navigation';
 import { withClickOutside } from '@/utils/withClickOutside';
+import { $user } from '@/context/user';
+import { logoutFx } from '@/api/auth';
 
 const ProfileDropdown = forwardRef<HTMLDivElement, IWrappedComponentProps>(
   ({ open, setOpen }, ref) => {
     const mode = useStore($mode);
+    const user = useStore($user);
     const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 
     const router = useRouter();
+
     const handleLogout = async () => {
-      // await logoutFx('/users/logout')
+      await logoutFx('/user/logout');
       router.push('/');
     };
 
@@ -44,11 +48,11 @@ const ProfileDropdown = forwardRef<HTMLDivElement, IWrappedComponentProps>(
               <li className={styles.profile__dropdown__user}>
                 <span
                   className={`${styles.profile__dropdown__username} ${darkModeClass}`}>
-                  Username
+                  {user.username}
                 </span>
                 <span
                   className={`${styles.profile__dropdown__email} ${darkModeClass}`}>
-                  Email
+                  {user.email}
                 </span>
               </li>
               <li className={styles.profile__dropdown__item}>

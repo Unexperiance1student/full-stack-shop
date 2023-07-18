@@ -16,7 +16,7 @@ class BoilerParts {
   parts_manufacturer: string;
 
   @ApiProperty({ example: faker.internet.password() })
-  vendor_code: string;
+  vandor_code: string;
 
   @ApiProperty({ example: faker.lorem.word() })
   name: string;
