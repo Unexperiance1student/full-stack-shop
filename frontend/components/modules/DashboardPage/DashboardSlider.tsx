@@ -55,12 +55,12 @@ const DashboardSlider = ({
       {...settings}
       className={styles.dashboard__slider}>
       {spinner ? (
-        [...Array(8)].map((_, i) => (
+        [...Array(8)].map((_, index) => (
           <div
             className={`${skeletonStyles.skeleton__item} ${
               mode === 'dark' ? `${skeletonStyles.dark_mode}` : ''
             }`}
-            key={i}
+            key={index}
             style={width}>
             <div className={skeletonStyles.skeleton__item__light} />
           </div>
