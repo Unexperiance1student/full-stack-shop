@@ -2,8 +2,8 @@ import { Event } from 'effector-next';
 
 export interface IManufacturersBlockProps {
   title: string;
-  //   event: Event<IFilterCheckboxItem>;
-  //   manufacturersList: IFilterCheckboxItem[];
+  event: Event<IFilterCheckboxItem>;
+  manufacturersList: IFilterCheckboxItem[];
 }
 
 export interface IManufacturersBlockItemProps {
@@ -35,15 +35,15 @@ export interface IFilterManufacturerAccordionProps {
   updateManufacturer: Event<IFilterCheckboxItem>;
 }
 
-interface ICatalogBaseTypes {
+export interface ICatalogBaseTypes {
   priceRange: number[];
   setPriceRange: (arg0: number[]) => void;
   setIsPriceRangeChanged: (arg0: boolean) => void;
 }
 
-interface ICatalogFiltersBaseTypes {
+export interface ICatalogFiltersBaseTypes extends ICatalogBaseTypes {
   resetFilterBtnDisabled: boolean;
-  resetFilters: VoidFunction;
+  resetFilters?: VoidFunction;
 }
 
 export interface ICatalogFiltersProps
@@ -62,7 +62,7 @@ export interface ICatalogFilterDesktopProps
   extends ICatalogBaseTypes,
     ICatalogFiltersBaseTypes {
   spinner: boolean;
-  applyFilters: VoidFunction;
+  applyFilters?: VoidFunction;
 }
 
 export interface ICatalogFilterMobileProps

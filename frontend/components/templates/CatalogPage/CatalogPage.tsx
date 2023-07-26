@@ -2,25 +2,36 @@ import { getBoilerPartsFx } from '@/api/boilerParts';
 import CatalogItem from '@/components/modules/CatalogPage/CatalogItem';
 import FilterSelect from '@/components/modules/CatalogPage/FilterSelect';
 import ManufacturersBlock from '@/components/modules/CatalogPage/ManufacturersBlock';
-import { $boilerParts, setBoilerParts } from '@/context/boilerParts';
+import {
+  $boilerManufacturers,
+  $boilerParts,
+  $partsManufacturers,
+  setBoilerParts,
+  updateBoilerManufacturer,
+  updatePartsManufacturer,
+} from '@/context/boilerParts';
 import { $mode } from '@/context/mode';
 import styles from '@/styles/catalog/index.module.scss';
 import skeletonStyles from '@/styles/skeleton/index.module.scss';
 import { IBoilerParts } from '@/types/boilerpars';
 import { IQueryParams } from '@/types/catalog';
+import { queryString } from '@/utils/common';
 import { useStore } from 'effector-react';
 import { AnimatePresence } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import { toast } from 'react-toastify';
+import CatalogFilters from '../../modules/CatalogPage/CatalogFilters';
 
 const CatalogPage = ({ query }: { query: IQueryParams | any }) => {
   const pathname = usePathname();
   const mode = useStore($mode);
+  const boilerManufacturers = useStore($boilerManufacturers);
+  const partsManufacturers = useStore($partsManufacturers);
   const boilerParts = useStore($boilerParts);
-  const [isFilterInQuery, setIsFilterInQuery] = useState(false);
   const [isPriceRangeChanged, setIsPriceRangeChanged] = useState(false);
+  const [priceRange, setPriceRange] = useState([1000, 9000]);
   const [spinner, setSpinner] = useState(false);
   const isValidOffset =
     query.offset && !isNaN(+query.offset) && +query.offset > 0;
@@ -30,6 +41,17 @@ const CatalogPage = ({ query }: { query: IQueryParams | any }) => {
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
   const pagesCount = Math.ceil(boilerParts.count / 20);
   const router = useRouter();
+  const isAnyBoilerManufacturerChecked = boilerManufacturers.some(
+    (item) => item.checked
+  );
+  const isAnyPartsManufacturerChecked = partsManufacturers.some(
+    (item) => item.checked
+  );
+  const resetFilterBtnDisabled = !(
+    isPriceRangeChanged ||
+    isAnyPartsManufacturerChecked ||
+    isAnyBoilerManufacturerChecked
+  );
 
   useEffect(() => {
     loadBoilerParts();
@@ -42,10 +64,10 @@ const CatalogPage = ({ query }: { query: IQueryParams | any }) => {
 
       if (!isValidOffset) {
         query.offset = '1';
-        const queryString = Object.entries(query)
-          .map(([key, value]) => `${key}=${value}`)
-          .join('&');
-        router.replace(`${pathname}?${queryString}`);
+
+        const queryStringParams = queryString(query);
+
+        router.replace(`${pathname}?${queryStringParams}`);
 
         resetPagination(data);
         return;
@@ -53,12 +75,10 @@ const CatalogPage = ({ query }: { query: IQueryParams | any }) => {
 
       if (isValidOffset) {
         if (+query.offset > Math.ceil(data.count / 20)) {
-          const queryString = Object.entries(query)
-            .map(([key, value]) => `${key}=${value}`)
-            .join('&');
+          const queryStringParams = queryString(query);
           query.offset = '1';
 
-          router.push(`${pathname}?${queryString}`, { shallow: true });
+          router.push(`${pathname}?${queryStringParams}`, { shallow: true });
 
           setCurrentPage(0);
           setBoilerParts(data);
@@ -109,10 +129,9 @@ const CatalogPage = ({ query }: { query: IQueryParams | any }) => {
       );
 
       query.offset = selected + 1;
-      const queryString = Object.entries(query)
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      router.push(`${pathname}?${queryString}`, { shallow: true });
+      const queryStringParams = queryString(query);
+
+      router.push(`${pathname}?${queryStringParams}`, { shallow: true });
       setCurrentPage(selected);
       setBoilerParts(result);
     } catch (error) {
@@ -129,15 +148,27 @@ const CatalogPage = ({ query }: { query: IQueryParams | any }) => {
         </h2>
         <div className={`${styles.catalog__top} ${darkModeClass}`}>
           <AnimatePresence>
-            <ManufacturersBlock title='Производитель котлов:' />
+            {isAnyBoilerManufacturerChecked && (
+              <ManufacturersBlock
+                title='Производитель котлов:'
+                manufacturersList={boilerManufacturers}
+                event={updateBoilerManufacturer}
+              />
+            )}
           </AnimatePresence>
           <AnimatePresence>
-            <ManufacturersBlock title='Производитель запчастей:' />
+            {isAnyPartsManufacturerChecked && (
+              <ManufacturersBlock
+                title='Производитель запчастей:'
+                manufacturersList={partsManufacturers}
+                event={updatePartsManufacturer}
+              />
+            )}
           </AnimatePresence>
           <div className={styles.catalog__top__inner}>
             <button
               className={`${styles.catalog__top__reset} ${darkModeClass}`}
-              disabled={true}>
+              disabled={resetFilterBtnDisabled}>
               Сбросить фильтр
             </button>
             <FilterSelect
@@ -148,7 +179,12 @@ const CatalogPage = ({ query }: { query: IQueryParams | any }) => {
         </div>
         <div className={styles.catalog__bottom}>
           <div className={styles.catalog__bottom__inner}>
-            <div>Filters</div>
+            <CatalogFilters
+              resetFilterBtnDisabled={resetFilterBtnDisabled}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              setIsPriceRangeChanged={setIsPriceRangeChanged}
+            />
             {spinner ? (
               <ul className={skeletonStyles.skeleton}>
                 {Array.from(new Array(20)).map((item, index) => (

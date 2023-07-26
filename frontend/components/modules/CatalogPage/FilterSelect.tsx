@@ -13,7 +13,7 @@ import {
 import { optionStyles } from '@/styles/searchInput';
 import { IQueryParams } from '@/types/catalog';
 import { IOption, SelectOptionType } from '@/types/common';
-import { createSelectOption } from '@/utils/common';
+import { createSelectOption, queryString } from '@/utils/common';
 import { categoriesOptions } from '@/utils/selectContent';
 import { useStore } from 'effector-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -61,10 +61,9 @@ const FilterSelect = ({
 
   const updateRoteParam = (first: string) => {
     searchParams.first = first;
-    let queryString = Object.entries(searchParams)
-      .map(([key, value]) => `${key}=${value}`)
-      .join('&');
-    router.push(`${pathname}?${queryString}`, { shallow: true });
+    let queryStringParams = queryString(searchParams);
+
+    router.push(`${pathname}?${queryStringParams}`, { shallow: true });
   };
 
   const handleSortOptionChange = (selectedOption: SelectOptionType) => {

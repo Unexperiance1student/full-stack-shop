@@ -53,3 +53,9 @@ export const removeClassNamesForOverlayAndBody = () => {
   document.querySelector('.overlay')?.classList.remove('open-search');
   document.querySelector('.body')?.classList.remove('overflow-hidden');
 };
+
+export const queryString = (query: any) => {
+  return Object.entries(query)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
+};
