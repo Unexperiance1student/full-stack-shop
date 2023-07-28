@@ -21,6 +21,8 @@ const CatalogFiltersDekstop = ({
   setIsPriceRangeChanged,
   resetFilterBtnDisabled,
   spinner,
+  resetFilters,
+  applyFilters,
 }: ICatalogFilterDesktopProps) => {
   const mode = useStore($mode);
   const boilerManufacturers = useStore($boilerManufacturers);
@@ -66,6 +68,7 @@ const CatalogFiltersDekstop = ({
       </div>
       <div className={styles.filters__actions}>
         <button
+          onClick={applyFilters}
           className={styles.filters__actions__show}
           disabled={spinner || resetFilterBtnDisabled}>
           {spinner ? (
@@ -78,6 +81,7 @@ const CatalogFiltersDekstop = ({
           )}
         </button>
         <button
+          onClick={resetFilters}
           className={styles.filters__actions__reset}
           disabled={resetFilterBtnDisabled}>
           Сбросить

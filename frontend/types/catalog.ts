@@ -43,7 +43,7 @@ export interface ICatalogBaseTypes {
 
 export interface ICatalogFiltersBaseTypes extends ICatalogBaseTypes {
   resetFilterBtnDisabled: boolean;
-  resetFilters?: VoidFunction;
+  resetFilters: VoidFunction;
 }
 
 export interface ICatalogFiltersProps
@@ -54,6 +54,7 @@ export interface ICatalogFiltersProps
   setIsFilterInQuery: (arg0: boolean) => void;
   closePopup: VoidFunction;
   filtersMobileOpen: boolean;
+  query: IQueryParams | any;
 }
 
 export type IPriceRangeProps = ICatalogBaseTypes;

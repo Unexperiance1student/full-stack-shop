@@ -60,6 +60,10 @@ const FilterSelect = ({
     setCategoryOption({ value, label: value });
 
   const updateRoteParam = (first: string) => {
+    searchParams.boiler = encodeURIComponent(
+      JSON.stringify(searchParams.boiler)
+    );
+    searchParams.parts = encodeURIComponent(JSON.stringify(searchParams.parts));
     searchParams.first = first;
     let queryStringParams = queryString(searchParams);
 

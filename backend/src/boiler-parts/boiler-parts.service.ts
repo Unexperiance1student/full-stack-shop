@@ -1,6 +1,6 @@
+import { IBoilerPartsFilter, IBoilerPartsQuery } from './types/index';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { IBoilerPartsQuery } from './types';
 import { Op } from 'sequelize';
 import { BoilerParts } from './entity/boilerParts.model';
 
@@ -15,9 +15,26 @@ export class BoilerPartsService {
   ): Promise<{ count: number; rows: BoilerParts[] }> {
     const limit = +query.limit;
     const offset = +query.offset * 20;
+    const filter = {} as Partial<IBoilerPartsFilter>;
+
+    if (query.priceFrom && query.priceTo) {
+      filter.price = {
+        [Op.between]: [+query.priceFrom, +query.priceTo],
+      };
+    }
+
+    if (query.boiler) {
+      filter.boiler_manufacturer = JSON.parse(decodeURIComponent(query.boiler));
+    }
+
+    if (query.parts) {
+      filter.parts_manufacturer = JSON.parse(decodeURIComponent(query.parts));
+    }
+
     return this.boilerPartsRep.findAndCountAll({
       limit,
       offset,
+      where: filter,
     });
   }
 

@@ -1,6 +1,8 @@
 import { NextRouter } from 'next/router';
-import { getQueryParamOnFirstRender, idGenerator } from './common';
+import { idGenerator, queryString } from './common';
 import { getBoilerPartsFx } from '@/api/boilerParts';
+import { IQueryParams } from '@/types/catalog';
+import { setFilteredBoilerParts } from '@/context/boilerParts';
 
 const createManufacturerCheckboxObj = (title: string) => ({
   title,
@@ -33,24 +35,14 @@ export const partsManufacturers = [
   'Croatia',
 ].map(createManufacturerCheckboxObj);
 
-const checkPriceFromQuery = (price: number) =>
+export const checkPriceFromQuery = (price: number) =>
   price && !isNaN(price) && price >= 0 && price <= 10000;
 
-export const checkQueryParams = (router: NextRouter) => {
-  const priceFromQueryValue = getQueryParamOnFirstRender(
-    'priceFrom',
-    router
-  ) as string;
-  const priceToQueryValue = getQueryParamOnFirstRender(
-    'priceTo',
-    router
-  ) as string;
-  const boilerQueryValue = JSON.parse(
-    decodeURIComponent(getQueryParamOnFirstRender('boiler', router) as string)
-  );
-  const partsQueryValue = JSON.parse(
-    decodeURIComponent(getQueryParamOnFirstRender('parts', router) as string)
-  );
+export const checkQueryParams = (query: any | IQueryParams) => {
+  const priceFromQueryValue = query.priceFrom as string;
+  const priceToQueryValue = query.priceTo as string;
+  const boilerQueryValue = JSON.parse(decodeURIComponent(query.boiler));
+  const partsQueryValue = JSON.parse(decodeURIComponent(query.parts));
   const isValidBoilerQuery =
     Array.isArray(boilerQueryValue) && !!boilerQueryValue?.length;
   const isValidPartsQuery =
@@ -78,33 +70,26 @@ export const updateParamsAndFiltersFromQuery = async (
 
   const data = await getBoilerPartsFx(`/boiler-parts?limit=20&offset=${path}`);
 
-  //   setFilteredBoilerParts(data)
+  setFilteredBoilerParts(data);
 };
 
-export async function updateParamsAndFilters<T>(
-  updatedParams: T,
-  path: string,
-  router: NextRouter
-) {
-  const params = router.query;
+// export async function updateParamsAndFilters(
+//   updateQuery: IQueryParams | any,
+//   path: string,
+//   query: any | IQueryParams,
+//   router: any,
+//   pathname: string
+// ) {
+//   console.log(updateQuery);
+//   delete query.boiler;
+//   delete query.parts;
+//   delete query.priceTo;
+//   delete query.priceFrom;
+//   const queryStringParams = queryString(updateQuery);
+//   console.log(updateQuery);
 
-  delete params.boiler;
-  delete params.parts;
-  delete params.priceFrom;
-  delete params.priceTo;
+//   router.push(`${pathname}?${queryStringParams}`, { shallow: true });
+//   const data = await getBoilerPartsFx(`/boiler-parts?limit=20&offset=${path}`);
 
-  router.push(
-    {
-      query: {
-        ...params,
-        ...updatedParams,
-      },
-    },
-    undefined,
-    { shallow: true }
-  );
-
-  const data = await getBoilerPartsFx(`/boiler-parts?limit=20&offset=${path}`);
-
-  //   setFilteredBoilerParts(data)
-}
+//   setFilteredBoilerParts(data);
+// }

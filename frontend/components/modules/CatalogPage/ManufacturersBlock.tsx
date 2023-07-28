@@ -24,14 +24,15 @@ const ManufacturersBlock = ({
         {title}
       </h3>
       <ul className={styles.manufacturers__list}>
-        {checkedItems.map((item) => (
-          <AnimatePresence key={item.id}>
+        <AnimatePresence>
+          {checkedItems.map((item) => (
             <ManufacturersBlockItems
               item={item}
+              key={item.id}
               event={event}
             />
-          </AnimatePresence>
-        ))}
+          ))}
+        </AnimatePresence>
       </ul>
     </motion.div>
   );
