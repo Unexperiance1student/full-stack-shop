@@ -1,7 +1,6 @@
 'use client';
 import CatalogPage from '@/components/templates/CatalogPage/CatalogPage';
 import useRedirectByUserCheck from '@/hooks/useRedirectByUserCheck';
-import { IQueryParams } from '@/types/catalog';
 
 // async function getProjects(context: { query: IQueryParams }) {
 //   return {
