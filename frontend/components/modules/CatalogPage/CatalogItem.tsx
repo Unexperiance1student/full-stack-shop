@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { $mode } from '@/context/mode';
 import { useStore } from 'effector-react';
 import { useState } from 'react';
@@ -10,15 +9,18 @@ import CartHoverCheckedSvg from '@/components/elements/CartHoverCheckedSvg/CartH
 import CartHoverSvg from '@/components/elements/CartHoverSvg/CartHoverSvg';
 import spinnerStyles from '@/styles/spinner/index.module.scss';
 import { $shoppingCart } from '@/context/shopping-cart';
+import { toggleCartItem } from '@/utils/shopping-cart';
+import { $user } from '@/context/user';
 
 const CatalogItem = ({ item }: { item: IBoilerPart }) => {
   const mode = useStore($mode);
+  const user = useStore($user);
   const shoppingCart = useStore($shoppingCart);
   const isInCart = shoppingCart.some((cartItem) => cartItem.partId === item.id);
   const [spinner, setSpinner] = useState(false);
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 
-  //   const toggleToCart = () => toggleCartItem(user.username, item.id, isInCart)
+  const toggleToCart = () => toggleCartItem(user.username, item.id, isInCart);
 
   return (
     <li className={`${styles.catalog__list__item} ${darkModeClass}`}>
@@ -45,8 +47,7 @@ const CatalogItem = ({ item }: { item: IBoilerPart }) => {
           isInCart ? styles.added : ''
         }`}
         disabled={spinner}
-        // onClick={toggleToCart}
-      >
+        onClick={toggleToCart}>
         {spinner ? (
           <div
             className={spinnerStyles.spinner}
